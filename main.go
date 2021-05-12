@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"flag"
+)
+
+const DEFAULT_ANIMAL = "cat"
 
 func main() {
-	fmt.Println("Forchure 0.0.1")
+	var animal string
+	flag.StringVar(&animal, "animal", DEFAULT_ANIMAL, "animal type")
+	flag.StringVar(&animal, "a", DEFAULT_ANIMAL, "animal type")
+	flag.Parse()
 }
