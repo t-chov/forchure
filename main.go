@@ -45,16 +45,12 @@ func (c *Cli) Run(args []string) int {
 		return ExitCodeOK
 	}
 
-	buf, err := lib.FetchAnimalTrivia(animal)
+	var client *lib.Client
+	trivia, err := client.FetchAnimalTrivia(animal)
 	if err != nil {
-		fmt.Fprintln(c.errStream, fmt.Errorf("failed to fetch animal trivia: %v", err))
+		fmt.Fprintf(c.errStream, "Failed to fetch API: %v", err)
 		return ExitCodeError
 	}
-	trivia, err := lib.ParseAnimalTrivia(buf)
-	if err != nil {
-		fmt.Fprintln(c.errStream, fmt.Errorf("failed to parse: %v", err))
-		return ExitCodeError
-	}
-	fmt.Fprintln(c.outStream, trivia)
-	return ExitCodeError
+	fmt.Println(trivia)
+	return ExitCodeOK
 }

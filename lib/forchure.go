@@ -14,7 +14,15 @@ type Fact struct {
 	Text string `json:"text"`
 }
 
-func FetchAnimalTrivia(animal string) (io.Reader, error) {
+type Fetcher interface {
+	requestAnimalTrivia(animal string) (io.Reader, error)
+}
+
+type Client struct {
+	Fetcher Fetcher
+}
+
+func (c *Client) requestAnimalTrivia(animal string) (io.Reader, error) {
 	resp, err := http.Get(fmt.Sprintf("%s?amount=1&animal_type=%s", API_ENDPOINT, animal))
 	if err != nil {
 		return nil, err
@@ -27,10 +35,15 @@ func FetchAnimalTrivia(animal string) (io.Reader, error) {
 	return &buffer, nil
 }
 
-func ParseAnimalTrivia(reader io.Reader) (string, error) {
+func (c *Client) FetchAnimalTrivia(animal string) (string, error) {
+	buffer, err := c.requestAnimalTrivia(animal)
+	if err != nil {
+		return "", err
+	}
 	var fact Fact
-	if err := json.NewDecoder(reader).Decode(&fact); err != nil {
+	if err := json.NewDecoder(buffer).Decode(&fact); err != nil {
 		return "", err
 	}
 	return fact.Text, nil
+
 }
